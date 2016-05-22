@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 public class ExpectedSarsa implements Runnable{
 	int states				=	1;
 	int actions				=	1;
-	int	evalInterval		=	1000;
+	//int	evalInterval		=	1000;
 	int currentState		=	0;
 	double yotaParameter	=	0.9;
 	double[] V;
@@ -39,6 +39,7 @@ public class ExpectedSarsa implements Runnable{
 		currentState		=	this.stateReader.getCurrentState();
 		System.out.println("State initialization "+currentState);
 		while(true){
+			currentState		=	this.stateReader.getCurrentState();
 			int action			=	this.policy.actionForState(currentState,Q);
 			System.out.println("Action chosen "+action);	//test
 			double reward		=	this.executor.execute(action);
@@ -47,7 +48,6 @@ public class ExpectedSarsa implements Runnable{
 			int newState		=	this.stateReader.getCurrentState();
 			this.currentState	=	newState;
 			double[] policy		=	this.policy.policyForState(newState,Q);
-			
 			System.out.print("Policy for state "+newState+":");	//test
 			for(int i=0;i<policy.length;i++){
 				System.out.print("Act:"+i+":"+policy[i]);
@@ -73,12 +73,13 @@ public class ExpectedSarsa implements Runnable{
 				}
 				System.out.print("\n");
 			}
+			/*
 			try {
 				Thread.sleep(this.evalInterval);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 		}
 		
 	}

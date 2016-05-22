@@ -16,7 +16,7 @@ public class FibonacciActionExecutor implements ActionExecutor{
 		System.out.println("Set concurrency level to "+	MainClass.concurrencyLevel);
 		MainClass.thNumber.set(MainClass.concurrencyLevel);
 		try {
-			Thread.sleep(200);
+			Thread.sleep(30000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

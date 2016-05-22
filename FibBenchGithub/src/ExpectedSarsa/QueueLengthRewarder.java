@@ -6,9 +6,9 @@ public class QueueLengthRewarder implements RewardCalculator {
 
 	//keeps 5 elements in queue, parabolic
 	
-	double a	=	-((double)-1/16);
-	double b	=	((double)25)/2;
-	double c	=	-((double)525);
+	double a	=	-((double)1/10);
+	double b	=	((double)2)/1;
+	double c	=	((double)0)/1;//-((double)525);
 	@Override
 	public double giveReward() {
 		int x			=	MainClass.queue.size();

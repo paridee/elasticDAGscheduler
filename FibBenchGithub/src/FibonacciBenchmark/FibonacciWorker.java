@@ -5,8 +5,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class FibonacciWorker implements Runnable {
 	int thId					=	0;
-	ReentrantLock		queueLock;
-	ArrayList<Integer>	queue;
+	ReentrantLock			queueLock;
+	ArrayList<Integer>		queue;
+	
+	//testing
+	public static int 		nCalculations=0;
+	public static double	totaltime;
+	ReentrantLock			counterTimeLock=new ReentrantLock();
+	//fine testing
+	
 	@Override
 	public void run() {
 		while(true){
@@ -18,15 +25,23 @@ public class FibonacciWorker implements Runnable {
 					int value	=	queue.get(0);
 					queue.remove(0);
 					this.queueLock.unlock();
-					//long now	=	System.nanoTime();//test
+					long now	=	System.nanoTime();//test
 					long fibResult	=	fibonacci(value);
-					//long after	=	System.nanoTime();//test
-					//double diff	=	(after-now)/1000000;
+					long after	=	System.nanoTime();//test
+					double diff	=	(after-now)/1000000;
+					
+					//testing
+					this.counterTimeLock.lock();
+					this.nCalculations++;
+					this.totaltime	=	totaltime+diff;
+					this.counterTimeLock.unlock();
+					//System.out.println("Average processing time "+this.totaltime/nCalculations);
+					//finetesting
 					//System.out.println("valore "+fibResult+"temp esecuzione "+diff);
 				} else
 					try {
 							this.queueLock.unlock();
-							Thread.sleep(10);
+							Thread.sleep(100);
 
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block

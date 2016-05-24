@@ -2,6 +2,8 @@ package ExpectedSarsa;
 
 import java.text.DecimalFormat;
 
+import FibonacciBenchmark.MainClass;
+
 public class ExpectedSarsa implements Runnable{
 	int states				=	1;
 	int actions				=	1;
@@ -44,6 +46,7 @@ public class ExpectedSarsa implements Runnable{
 			System.out.println("Action chosen "+action);	//test
 			double reward		=	this.executor.execute(action);
 			System.out.println("Reward obtained "+reward);	//test
+			MainClass.rewardVal.set(reward);
 			int oldState		=	this.currentState;
 			int newState		=	this.stateReader.getCurrentState();
 			this.currentState	=	newState;
@@ -60,7 +63,7 @@ public class ExpectedSarsa implements Runnable{
 			}
 			V[newState]			=	temp;
 			Q[oldState][action]	=	Q[oldState][action]+
-									this.alphaCalculator.getAlpha()*(
+									this.alphaCalculator.getAlpha(action)*(
 											reward+(this.yotaParameter*V[newState])-Q[oldState][action]);
 			
 			System.out.println("Updated Q["+oldState+"]["+action+"]");
@@ -70,6 +73,7 @@ public class ExpectedSarsa implements Runnable{
 					double qij					=	Q[i][j];
 					DecimalFormat numberFormat = new DecimalFormat("0.00");
 					System.out.print(numberFormat.format(qij)+"\t");
+					MainClass.qMatrix[i][j].set(qij);
 				}
 				System.out.print("\n");
 			}

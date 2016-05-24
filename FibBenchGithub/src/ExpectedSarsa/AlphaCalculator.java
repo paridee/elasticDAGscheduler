@@ -2,6 +2,6 @@ package ExpectedSarsa;
 
 public interface AlphaCalculator {
 
-	double getAlpha();
+	double getAlpha(int action);
 
 }

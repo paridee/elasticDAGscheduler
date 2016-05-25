@@ -7,10 +7,12 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import ExpectedSarsa.EpsilonGreedyChooser;
+import ExpectedSarsa.EpsilonGreedyVBDEChooser;
 import ExpectedSarsa.ExpectedSarsa;
 import ExpectedSarsa.FibonacciActionExecutor;
 import ExpectedSarsa.QueueLengthRewarder;
 import ExpectedSarsa.QueueLengthStateReader;
+import ExpectedSarsa.SoftmaxPolicyChooser;
 import ExpectedSarsa.StaticAlphaCalculator;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.exporter.MetricsServlet;
@@ -67,7 +69,7 @@ public class MainClass {
 		}
 		
 		
-		ExpectedSarsa	expSarsa	=	new ExpectedSarsa(statesN,concurrentThreads,0,new EpsilonGreedyChooser(epsilonLevel),new FibonacciActionExecutor(new QueueLengthRewarder()),new QueueLengthStateReader(15,45),new StaticAlphaCalculator());
+		ExpectedSarsa	expSarsa	=	new ExpectedSarsa(statesN,concurrentThreads,0,new EpsilonGreedyVBDEChooser(100.0),new FibonacciActionExecutor(new QueueLengthRewarder()),new QueueLengthStateReader(15,45),new StaticAlphaCalculator());
 		aThread	=	new Thread(expSarsa);
 		aThread.start();
 		for(int i=0;i<concurrentThreads;i++){

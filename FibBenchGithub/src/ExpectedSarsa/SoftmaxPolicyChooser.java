@@ -19,7 +19,7 @@ public class SoftmaxPolicyChooser implements PolicyChooser {
 		}
 		for(int i=0;i<q[stateId].length;i++){
 			result[i]	=	Math.pow(e, (q[stateId][i]/temperature))/den;
-			System.out.println("p("+i+")="+result[i]);
+			//System.out.println("p("+i+")="+result[i]);
 		}
 		return result;
 	}
@@ -33,9 +33,16 @@ public class SoftmaxPolicyChooser implements PolicyChooser {
 		for(int i=1;i<policy.length-1;i++){
 			cumulative[i]	=	cumulative[i-1]+policy[i];
 		}
-		double rand	=	Math.random();
+		
 		for(int i=0;i<policy.length;i++){
-			if(rand<=policy[i]){
+			System.out.println("X("+i+")="+cumulative[i]);
+		}
+		
+		
+		double rand	=	Math.random();
+		System.out.println("Random value "+rand);
+		for(int i=0;i<policy.length;i++){
+			if(rand<=cumulative[i]){
 				return i;
 			}
 		}

@@ -11,7 +11,7 @@ public class QueueLengthRewarder implements RewardCalculator {
 	double c	=	-((double)300)/1;//-((double)525);
 	@Override
 	public double giveReward() {
-		int x			=	MainClass.queue.size();
+		double x			=	MainClass.queueSize;
 		double firstpart	=	a*x*x;
 		double secondpart	=	b*x;
 		double reward	=	firstpart+secondpart+c;

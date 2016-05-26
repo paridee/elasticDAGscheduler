@@ -16,10 +16,10 @@ public class QueueLengthStateReader implements StateReader {
 
 	@Override
 	public int getCurrentState() {
-		if(MainClass.queue.size()<lowThresh){
+		if(MainClass.queueSize<lowThresh){
 			return 0;
 		}
-		else if(MainClass.queue.size()>highThresh){
+		else if(MainClass.queueSize>highThresh){
 			return 2;
 		}
 		return 1;

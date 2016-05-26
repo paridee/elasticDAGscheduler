@@ -1,5 +1,7 @@
 package ExpectedSarsa;
 
+//TODO not working... check
+
 public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 	private double[] 	epsilont	=	null;
 	private double		temperature;
@@ -29,6 +31,10 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 		temp	=	temp/this.temperature;
 		double num	=	1-(Math.pow(e, temp));
 		double den	=	1+(Math.pow(e, temp));
+		
+		//test
+		System.out.println("Function value state "+s+" action "+a+" temperature "+temperature+" num "+num+" den "+den+" exp value "+temp);
+		//endtest
 		return (num/den);
 	}
 	
@@ -64,11 +70,11 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 			prevq		=	new double[q.length][q[0].length];
 			epsilont	=	new double[q.length];
 			for(int i=0;i<q.length;i++){
-				this.epsilont[i]	=	((double)1/q.length);
+				this.epsilont[i]	=	0.1;
 			}
 		}
 		if(this.delta==-1){
-			delta	=	1/(q[0].length);	//default value: 1/#actions
+			delta	=	(double)1/(q[0].length);	//default value: 1/#actions
 		}
 		//end of initialization block
 		
@@ -80,12 +86,20 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 		for(int i=1;i<policy.length-1;i++){
 			cumulative[i]	=	cumulative[i-1]+policy[i];
 		}
+		
+		System.out.println("Cumulative dist");
+		for(int i=0;i<policy.length;i++){
+			System.out.println("X["+i+"]="+cumulative[i]);
+		}
+		
 		double 	rand		=	Math.random();
 		int		action		=	-1;
 		System.out.println("Random value "+rand);
 		for(int i=0;i<policy.length;i++){
 			if(rand<=cumulative[i]){
 				action	=	i;
+				System.out.println("action "+i+" passed the test");
+				break;
 			}
 		}
 		if(action==-1){
@@ -98,10 +112,12 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 	}
 
 	private void updateEpsilons() {
-		System.out.println("");
+		System.out.println("Updating epsilons ");
+		System.out.println("Updating state "+this.prevs+" action "+this.preva+" from "+this.epsilont[this.prevs]);
 		if(this.preva>-1){
 			this.epsilont[this.prevs]	=	(delta*this.function(this.prevs, this.preva, this.temperature))+((1-this.delta)*epsilont[this.prevs]);
 		}
+		System.out.println("to "+this.epsilont[this.prevs]);
 		System.out.println("Epsilon matrix ");
 		for(int i=0;i<epsilont.length;i++){
 			System.out.println(epsilont[i]);

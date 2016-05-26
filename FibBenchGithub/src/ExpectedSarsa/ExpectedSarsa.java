@@ -51,6 +51,8 @@ public class ExpectedSarsa implements Runnable{
 			int newState		=	this.stateReader.getCurrentState();
 			this.currentState	=	newState;
 			double[] policy		=	this.policy.policyForState(newState,Q);
+			
+			
 			System.out.print("Policy for state "+newState+":");	//test
 			for(int i=0;i<policy.length;i++){
 				System.out.print("Act:"+i+":"+policy[i]);

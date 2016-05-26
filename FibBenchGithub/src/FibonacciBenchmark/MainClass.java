@@ -12,6 +12,7 @@ import ExpectedSarsa.ExpectedSarsa;
 import ExpectedSarsa.FibonacciActionExecutor;
 import ExpectedSarsa.QueueLengthRewarder;
 import ExpectedSarsa.QueueLengthStateReader;
+import ExpectedSarsa.QueueMonitor;
 import ExpectedSarsa.SoftmaxPolicyChooser;
 import ExpectedSarsa.StaticAlphaCalculator;
 import io.prometheus.client.Gauge;
@@ -19,12 +20,14 @@ import io.prometheus.client.exporter.MetricsServlet;
 
 
 public class MainClass {
-	public static int 						concurrentThreads	=	4;
-	public static int 						concurrencyLevel	=	1;
-	public static int						seedingInterval		=	800;
-	public static double					epsilonLevel		=	0.1;
-	public static ReentrantLock				queueLock			=	new ReentrantLock();
-	public static ArrayList<Integer>		queue				=	new ArrayList<Integer>();
+	public static 	int 			concurrentThreads	=	4;
+	public static 	int 			concurrencyLevel	=	1;
+	public static 	int				seedingInterval		=	20;
+	public static	int				evalInterval		=	5000;
+	public static 	double			epsilonLevel		=	0.1;
+	public static 	ReentrantLock	queueLock			=	new ReentrantLock();
+	public static ArrayList<Integer>queue				=	new ArrayList<Integer>();
+	public static 	double			queueSize			=	0;
 	public static 	Gauge			thNumber	=	Gauge.build().name("bench_thLevel").help("Number of working threads").register();
 	public static	Gauge			queueDim	=	Gauge.build().name("bench_queueDim").help("Number of queued elements").register();
 	public static	Gauge			rewardVal	=	Gauge.build().name("bench_rewardVal").help("Reward received value").register();
@@ -45,6 +48,9 @@ public class MainClass {
 		  } catch (Exception e1) {
 			  e1.printStackTrace();
 		  }
+		QueueMonitor monitor	=	new QueueMonitor(evalInterval/10,0.4);
+		Thread		monitorThread	=	new Thread(monitor);
+		monitorThread.start();
 		Seeder aSeeder		=	new Seeder(queue,seedingInterval,queueLock);
 		Thread aThread		=	new Thread(aSeeder);
 		aThread.start();
@@ -69,7 +75,7 @@ public class MainClass {
 		}
 		
 		
-		ExpectedSarsa	expSarsa	=	new ExpectedSarsa(statesN,concurrentThreads,0,new EpsilonGreedyVBDEChooser(100.0),new FibonacciActionExecutor(new QueueLengthRewarder()),new QueueLengthStateReader(15,45),new StaticAlphaCalculator());
+		ExpectedSarsa	expSarsa	=	new ExpectedSarsa(statesN,concurrentThreads,0,new EpsilonGreedyChooser(0.1),new FibonacciActionExecutor(new QueueLengthRewarder(),evalInterval),new QueueLengthStateReader(15,45),new StaticAlphaCalculator());
 		aThread	=	new Thread(expSarsa);
 		aThread.start();
 		for(int i=0;i<concurrentThreads;i++){

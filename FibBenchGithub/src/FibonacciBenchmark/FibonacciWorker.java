@@ -41,7 +41,7 @@ public class FibonacciWorker implements Runnable {
 				} else
 					try {
 							this.queueLock.unlock();
-							Thread.sleep(100);
+							Thread.sleep(MainClass.evalInterval/50);
 
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -50,7 +50,7 @@ public class FibonacciWorker implements Runnable {
 			}
 			else{
 				try {
-					Thread.sleep(100);
+					Thread.sleep(MainClass.evalInterval/50);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

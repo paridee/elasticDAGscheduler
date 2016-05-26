@@ -1,10 +1,14 @@
 package FibonacciBenchmark;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import ExpectedSarsa.SoftmaxPolicyChooser;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 
 public class Decisor implements Runnable {
 	int interval;
-	
+	public final static Logger logger	=	LogManager.getLogger(Decisor.class);
 	int counter	=	0;
 	
 	
@@ -22,7 +26,7 @@ public class Decisor implements Runnable {
 			}
 			MainClass.concurrencyLevel	=	(counter%4)+1;
 			MainClass.thNumber.set(MainClass.concurrencyLevel);
-			System.out.println("Switched to "+MainClass.concurrencyLevel+" threads");
+			logger.debug("Switched to "+MainClass.concurrencyLevel+" threads");
 			counter++;
 		}
 

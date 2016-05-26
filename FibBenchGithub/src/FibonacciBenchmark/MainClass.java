@@ -2,12 +2,14 @@ package FibonacciBenchmark;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.log4j.BasicConfigurator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import ExpectedSarsa.EpsilonGreedyChooser;
 import ExpectedSarsa.EpsilonGreedyVBDEChooser;
+import ExpectedSarsa.EvalIntervalManager;
 import ExpectedSarsa.ExpectedSarsa;
 import ExpectedSarsa.FibonacciActionExecutor;
 import ExpectedSarsa.QueueLengthRewarder;
@@ -22,8 +24,8 @@ import io.prometheus.client.exporter.MetricsServlet;
 public class MainClass {
 	public static 	int 			concurrentThreads	=	4;
 	public static 	int 			concurrencyLevel	=	1;
-	public static 	int				seedingInterval		=	20;
-	public static	int				evalInterval		=	5000;
+	public static 	int				seedingInterval		=	67;
+	//public static	int				evalInterval		=	5000;
 	public static 	double			epsilonLevel		=	0.1;
 	public static 	ReentrantLock	queueLock			=	new ReentrantLock();
 	public static ArrayList<Integer>queue				=	new ArrayList<Integer>();
@@ -31,6 +33,7 @@ public class MainClass {
 	public static 	Gauge			thNumber	=	Gauge.build().name("bench_thLevel").help("Number of working threads").register();
 	public static	Gauge			queueDim	=	Gauge.build().name("bench_queueDim").help("Number of queued elements").register();
 	public static	Gauge			rewardVal	=	Gauge.build().name("bench_rewardVal").help("Reward received value").register();
+	public static	Gauge			evalInterval=	Gauge.build().name("bench_evalInterval").help("Evaluation interval").register();
 	public static	Gauge.Child[][]	qMatrix;
 	public static 	int statesN		=	3;
 	/**
@@ -38,6 +41,7 @@ public class MainClass {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		BasicConfigurator.configure();	//log4j
 		  Server server = new Server(1234);
 		  ServletContextHandler context = new ServletContextHandler();
 		  context.setContextPath("/");
@@ -48,7 +52,8 @@ public class MainClass {
 		  } catch (Exception e1) {
 			  e1.printStackTrace();
 		  }
-		QueueMonitor monitor	=	new QueueMonitor(evalInterval/10,0.4);
+		EvalIntervalManager evalIntManager	=	new EvalIntervalManager(10000);
+		QueueMonitor monitor	=	new QueueMonitor(10,0.4,evalIntManager);
 		Thread		monitorThread	=	new Thread(monitor);
 		monitorThread.start();
 		Seeder aSeeder		=	new Seeder(queue,seedingInterval,queueLock);
@@ -75,11 +80,11 @@ public class MainClass {
 		}
 		
 		
-		ExpectedSarsa	expSarsa	=	new ExpectedSarsa(statesN,concurrentThreads,0,new EpsilonGreedyChooser(0.1),new FibonacciActionExecutor(new QueueLengthRewarder(),evalInterval),new QueueLengthStateReader(15,45),new StaticAlphaCalculator());
+		ExpectedSarsa	expSarsa	=	new ExpectedSarsa(statesN,concurrentThreads,0,new EpsilonGreedyChooser(0.1),new FibonacciActionExecutor(new QueueLengthRewarder(),evalIntManager),new QueueLengthStateReader(15,45),new StaticAlphaCalculator());
 		aThread	=	new Thread(expSarsa);
 		aThread.start();
 		for(int i=0;i<concurrentThreads;i++){
-			FibonacciWorker		fw		=	new FibonacciWorker(i,queue,queueLock);
+			FibonacciWorker		fw		=	new FibonacciWorker(i,queue,queueLock,evalIntManager);
 			aThread						=	new Thread(fw);
 			aThread.start();
 		}

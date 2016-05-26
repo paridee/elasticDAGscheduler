@@ -2,6 +2,9 @@ package ExpectedSarsa;
 
 import java.text.DecimalFormat;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import FibonacciBenchmark.MainClass;
 
 public class ExpectedSarsa implements Runnable{
@@ -16,6 +19,7 @@ public class ExpectedSarsa implements Runnable{
 	ActionExecutor 	executor;
 	StateReader		stateReader;
 	AlphaCalculator	alphaCalculator;
+	public final static Logger logger	=	LogManager.getLogger(ExpectedSarsa.class);
 	
 	public ExpectedSarsa(int states, int actions,int initialState,PolicyChooser chooser,ActionExecutor actionExecutor,StateReader stateReader,AlphaCalculator alphaCalculator){
 		V	=	new double[states];
@@ -37,15 +41,15 @@ public class ExpectedSarsa implements Runnable{
 
 	@Override
 	public void run() {
-		System.out.println("Start Expected Sarsa Algorithm");
+		logger.debug("Start Expected Sarsa Algorithm");
 		currentState		=	this.stateReader.getCurrentState();
-		System.out.println("State initialization "+currentState);
+		logger.debug("State initialization "+currentState);
 		while(true){
 			currentState		=	this.stateReader.getCurrentState();
 			int action			=	this.policy.actionForState(currentState,Q);
-			System.out.println("Action chosen "+action);	//test
+			logger.debug("Action chosen "+action);	//test
 			double reward		=	this.executor.execute(action);
-			System.out.println("Reward obtained "+reward);	//test
+			logger.debug("Reward obtained "+reward);	//test
 			MainClass.rewardVal.set(reward);
 			int oldState		=	this.currentState;
 			int newState		=	this.stateReader.getCurrentState();
@@ -57,7 +61,7 @@ public class ExpectedSarsa implements Runnable{
 			for(int i=0;i<policy.length;i++){
 				System.out.print("Act:"+i+":"+policy[i]);
 			}
-			System.out.println("");								//endtest
+			logger.debug("");								//endtest
 			
 			double temp			=	0;
 			for(int i=0;i<actions;i++){
@@ -68,8 +72,8 @@ public class ExpectedSarsa implements Runnable{
 									this.alphaCalculator.getAlpha(action)*(
 											reward+(this.yotaParameter*V[newState])-Q[oldState][action]);
 			
-			System.out.println("Updated Q["+oldState+"]["+action+"]");
-			System.out.println("Q matrix:"+states+" "+actions);
+			logger.info("Updated Q["+oldState+"]["+action+"]");
+			logger.info("Q matrix:"+states+" "+actions);
 			for(int i=0;i<states;i++){
 				for(int j=0;j<actions;j++){
 					double qij					=	Q[i][j];

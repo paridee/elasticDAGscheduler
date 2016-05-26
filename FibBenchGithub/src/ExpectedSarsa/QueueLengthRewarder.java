@@ -1,9 +1,12 @@
 package ExpectedSarsa;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import FibonacciBenchmark.MainClass;
 
 public class QueueLengthRewarder implements RewardCalculator {
-
+	public final static Logger logger	=	LogManager.getLogger(QueueLengthRewarder.class);
 	//keeps 5 elements in queue, parabolic
 	
 	double a	=	-((double)4/9);
@@ -15,7 +18,7 @@ public class QueueLengthRewarder implements RewardCalculator {
 		double firstpart	=	a*x*x;
 		double secondpart	=	b*x;
 		double reward	=	firstpart+secondpart+c;
-		System.out.println("Reward calculated for queue size "+x+": "+reward+"("+firstpart+"+"+secondpart+",a="+a+" b="+b+")");
+		logger.debug("Reward calculated for queue size "+x+": "+reward+"("+firstpart+"+"+secondpart+",a="+a+" b="+b+")");
 		return reward;
 	}
 

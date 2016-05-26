@@ -2,18 +2,24 @@ package FibonacciBenchmark;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import ExpectedSarsa.SoftmaxPolicyChooser;
+
 
 public class Seeder implements Runnable{
 	public ReentrantLock		queueLock;
 	public ArrayList<Integer> 	queue;
 	public int 					interval;
 	public int 					currentInterval;
-	public int 					refValue	=	27;
+	public int 					refValue	=	35;
 	public long					changeTime;
 	int counter					=	0;
+	public final static Logger logger	=	LogManager.getLogger(Seeder.class);
 	
 	public int generate(){	//generator to be substituted
-		return (int)((Math.random()*10)+refValue);
+		return (int)((Math.random()*3)+refValue);
 		//return 42;
 	}
 	
@@ -25,19 +31,19 @@ public class Seeder implements Runnable{
 			
 			//level switching
 			if(System.currentTimeMillis()-this.changeTime>120000){
-				System.out.println("Seeder: switching reference value to "+(this.refValue+5));
+				logger.debug("Seeder: switching reference value to "+(this.refValue+5));
 				this.changeTime	=	System.currentTimeMillis();
 				//this.refValue	=	this.refValue+5;
-				if(refValue>35){
-					refValue	=	20;
-				}
+				//if(refValue>35){
+				//	refValue	=	20;
+				//}
 			}
 			//level switching end
 			
 			queueLock.lock();
 			int value	=	generate();
 			queue.add(value);
-			//System.out.println("added element on queue "+value+" size "+MainClass.queue.size());
+			//logger.debug("added element on queue "+value+" size "+MainClass.queue.size());
 			MainClass.queueDim.set(MainClass.queue.size());
 			queueLock.unlock();
 			try {
@@ -49,11 +55,11 @@ public class Seeder implements Runnable{
 			/*counter++;
 			if(counter%10==0){
 				currentInterval--;
-				System.out.println("Interval decreased");
+				logger.debug("Interval decreased");
 			}
 			if(currentInterval==0){
 				currentInterval	=	interval;
-				System.out.println("Interval restored");
+				logger.debug("Interval restored");
 			}*/
 		}
 		

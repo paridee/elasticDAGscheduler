@@ -1,5 +1,8 @@
 package ExpectedSarsa;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 //TODO not working... check
 
 public class EpsilonGreedyVBDEChooser implements PolicyChooser{
@@ -11,6 +14,7 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 	private double[][]	q;
 	private double 		delta		=	-1;
 	double e			=	2.71828;
+	public final static Logger logger	=	LogManager.getLogger(EpsilonGreedyVBDEChooser.class);
 	
 	public EpsilonGreedyVBDEChooser(double temperature){	//in the article delta is set to 1/#actions page 4 http://www.tokic.com/www/tokicm/publikationen/papers/AdaptiveEpsilonGreedyExploration.pdf
 		super();
@@ -33,8 +37,9 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 		double den	=	1+(Math.pow(e, temp));
 		
 		//test
-		System.out.println("Function value state "+s+" action "+a+" temperature "+temperature+" num "+num+" den "+den+" exp value "+temp);
+		logger.debug("Function value state "+s+" action "+a+" temperature "+temperature+" num "+num+" den "+den+" exp value "+temp);
 		//endtest
+		
 		return (num/den);
 	}
 	
@@ -87,18 +92,18 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 			cumulative[i]	=	cumulative[i-1]+policy[i];
 		}
 		
-		System.out.println("Cumulative dist");
+		logger.debug("Cumulative dist");
 		for(int i=0;i<policy.length;i++){
-			System.out.println("X["+i+"]="+cumulative[i]);
+			logger.debug("X["+i+"]="+cumulative[i]);
 		}
 		
 		double 	rand		=	Math.random();
 		int		action		=	-1;
-		System.out.println("Random value "+rand);
+		logger.debug("Random value "+rand);
 		for(int i=0;i<policy.length;i++){
 			if(rand<=cumulative[i]){
 				action	=	i;
-				System.out.println("action "+i+" passed the test");
+				logger.debug("action "+i+" passed the test");
 				break;
 			}
 		}
@@ -112,15 +117,15 @@ public class EpsilonGreedyVBDEChooser implements PolicyChooser{
 	}
 
 	private void updateEpsilons() {
-		System.out.println("Updating epsilons ");
-		System.out.println("Updating state "+this.prevs+" action "+this.preva+" from "+this.epsilont[this.prevs]);
+		logger.debug("Updating epsilons ");
+		logger.debug("Updating state "+this.prevs+" action "+this.preva+" from "+this.epsilont[this.prevs]);
 		if(this.preva>-1){
 			this.epsilont[this.prevs]	=	(delta*this.function(this.prevs, this.preva, this.temperature))+((1-this.delta)*epsilont[this.prevs]);
 		}
-		System.out.println("to "+this.epsilont[this.prevs]);
-		System.out.println("Epsilon matrix ");
+		logger.debug("to "+this.epsilont[this.prevs]);
+		logger.debug("Epsilon matrix ");
 		for(int i=0;i<epsilont.length;i++){
-			System.out.println(epsilont[i]);
+			logger.debug(epsilont[i]);
 		}
 	}
 

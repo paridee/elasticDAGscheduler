@@ -1,9 +1,13 @@
 package ExpectedSarsa;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class SoftmaxPolicyChooser implements PolicyChooser {
 	
 	double e			=	2.71828;
 	double temperature	=	1;
+	public final static Logger logger	=	LogManager.getLogger(SoftmaxPolicyChooser.class);
 	
 	public SoftmaxPolicyChooser(double temp){
 		super();
@@ -19,7 +23,7 @@ public class SoftmaxPolicyChooser implements PolicyChooser {
 		}
 		for(int i=0;i<q[stateId].length;i++){
 			result[i]	=	Math.pow(e, (q[stateId][i]/temperature))/den;
-			//System.out.println("p("+i+")="+result[i]);
+			//logger.debug("p("+i+")="+result[i]);
 		}
 		return result;
 	}
@@ -35,12 +39,12 @@ public class SoftmaxPolicyChooser implements PolicyChooser {
 		}
 		
 		for(int i=0;i<policy.length;i++){
-			System.out.println("X("+i+")="+cumulative[i]);
+			logger.debug("X("+i+")="+cumulative[i]);
 		}
 		
 		
 		double rand	=	Math.random();
-		System.out.println("Random value "+rand);
+		logger.debug("Random value "+rand);
 		for(int i=0;i<policy.length;i++){
 			if(rand<=cumulative[i]){
 				return i;

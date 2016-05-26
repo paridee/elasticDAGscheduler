@@ -1,8 +1,11 @@
 package ExpectedSarsa;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class EpsilonGreedyChooser implements PolicyChooser {
 	double	epsilon	=	0.2;
-	
+	public final static Logger logger	=	LogManager.getLogger(EpsilonGreedyChooser.class);
 	public EpsilonGreedyChooser(double eps){
 		epsilon	=	eps;
 	}
@@ -25,7 +28,7 @@ public class EpsilonGreedyChooser implements PolicyChooser {
 		int bestAction	=	this.getBestAction(currentState, q);
 		double rand		=	Math.random();		//TODO: change uniform random choosing in exploration
 		if(rand<epsilon){
-			System.out.println("Exploration phase "+rand);
+			logger.debug("Exploration phase "+rand);
 			int tempAction	=	bestAction;
 			while(tempAction==bestAction){
 				tempAction	=	(int) (Math.random()*q[currentState].length);
@@ -33,7 +36,7 @@ public class EpsilonGreedyChooser implements PolicyChooser {
 			return tempAction;
 		}
 		else{
-			System.out.println("Exploitation phase "+rand);
+			logger.debug("Exploitation phase "+rand);
 			return bestAction;
 		}
 	}
